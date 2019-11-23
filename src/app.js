@@ -4,8 +4,13 @@ const bodyParser = require("body-parser");
 
 const app = express()
 
-mongoose.connect("mongodb://localhost:27017/reprograma",
+//para conectar no servidor do mongo Atlas online
+mongoose.connect("mongodb+srv://bronx:bruhmegg00@cluster0-jpfhh.mongodb.net/clientes",
 {userNewUrlParser: true});
+
+//para conectar no servidor local
+//mongoose.connect("mongodb://localhost:27017/reprograma",
+//{userNewUrlParser: true});
 
 let db = mongoose.connection;
 db.on("error", console.log.bind(console, "connection error:"))
@@ -25,6 +30,9 @@ app.use(function(req, res, next) {
   )
   next()
 })
+
+//para apidoc funcionar
+app.use(express.static("public"));
 
 app.use(bodyParser.json());
 

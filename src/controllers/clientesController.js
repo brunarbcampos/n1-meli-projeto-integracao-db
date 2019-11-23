@@ -46,3 +46,52 @@ exports.getCpf = (req, res) => {
     res.status(200).send(cliente);
   })
 }
+
+exports.updateCliente = (req, res) => {
+
+  if (!validaFormulario(req.body)) return res.status(400).send({ mensagem: "campos inválidos" });
+
+  Clientes.update(
+      { cpf: req.params.cpf },
+      { $set: req.body },
+      { upsert: true },
+      function (err) {
+          if (err) return res.status(500).send(err);
+          res.status(200).send({ mensagem: "Atualizado com sucesso!" });
+      })
+}
+
+const validaFormulario = (campos) => {
+
+  const schema = {
+      nome: Joi.string().min(1).required(),
+      email: Joi.string().min(1).required(),
+  }
+
+  const validation = Joi.validate(campos, schema);
+
+  if (validation.error) {
+      return false;
+  }
+  return true;
+}
+
+exports.deleteCliente = (req, res) => {
+  const cpf = req.params.cpf;
+
+  Clientes.findOne({ cpf }, function(err, cliente){
+    if (err) return res.status(500).send(err); //esse método encontra pela variável pedida 
+  /*Clientes.findById(idCliente, function(err, cliente){
+    if (err) return res.status(500).send(err);     /esse método encontra por id*/
+
+    if (!cliente){
+      return res.status(200).send({ message: "Infelizmente esse cliente não foi encontrado!!!"});
+    }
+      
+        cliente.remove(function(err){
+      if(!err) {
+        res.status(200).send({ message: "Cliente removido com sucesso!!!"});
+      }
+    })
+    })
+}
